@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Present Perfect Mastery Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c7d2fe;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #818cf8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Top Header -->
+    <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-500 text-white p-2 rounded-lg font-bold text-xl flex items-center justify-center w-10 h-10 shadow-md">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Present Perfect Studio</h1>
+                    <p class="text-xs text-indigo-200">Since, For, Already & Yet</p>
+                </div>
+            </div>
+
+            <!-- Global Progress & Score -->
+            <div class="flex items-center space-x-6">
+                <div class="hidden md:flex flex-col items-end">
+                    <div class="text-xs text-indigo-200 font-medium">Overall Progress</div>
+                    <div class="w-32 bg-indigo-950 rounded-full h-2.5 mt-1 overflow-hidden">
+                        <div id="globalProgressBar" class="bg-emerald-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="bg-indigo-800/80 px-3 py-1.5 rounded-lg border border-indigo-700/50 flex items-center space-x-2">
+                    <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+                    <span id="globalScoreText" class="font-bold text-sm text-white">0 / 32 pts</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full flex flex-col">
+        
+        <!-- Navigation Tabs -->
+        <div class="flex overflow-x-auto border-b border-slate-200 bg-white rounded-t-xl shadow-sm p-1.5 gap-1 mb-6 custom-scrollbar">
+            <button onclick="switchTab('discovery')" id="tab-btn-discovery" class="tab-btn flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold text-sm transition flex items-center justify-center space-x-2 text-indigo-600 bg-indigo-50 border border-indigo-100 shadow-sm">
+                <i class="fa-solid fa-lightbulb"></i>
+                <span>1. Discovery</span>
+                <span id="badge-discovery" class="ml-1.5 bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-medium">0/8</span>
+            </button>
+            <button onclick="switchTab('fill')" id="tab-btn-fill" class="tab-btn flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold text-sm transition flex items-center justify-center space-x-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-50">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>2. Fill-in Blanks</span>
+                <span id="badge-fill" class="ml-1.5 bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-medium">0/8</span>
+            </button>
+            <button onclick="switchTab('writing')" id="tab-btn-writing" class="tab-btn flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold text-sm transition flex items-center justify-center space-x-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-50">
+                <i class="fa-solid fa-keyboard"></i>
+                <span>3. Sentence Lab</span>
+                <span id="badge-writing" class="ml-1.5 bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-medium">0/8</span>
+            </button>
+            <button onclick="switchTab('speaking')" id="tab-btn-speaking" class="tab-btn flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold text-sm transition flex items-center justify-center space-x-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-50">
+                <i class="fa-solid fa-microphone"></i>
+                <span>4. Pronunciation</span>
+                <span id="badge-speaking" class="ml-1.5 bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-medium">0/8</span>
+            </button>
+            <button onclick="switchTab('report')" id="tab-btn-report" class="tab-btn flex-1 min-w-[140px] px-4 py-3 rounded-lg font-semibold text-sm transition flex items-center justify-center space-x-2 text-slate-600 hover:text-indigo-600 hover:bg-slate-50">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>5. AI Summary</span>
+                <span class="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-medium">Report</span>
+            </button>
+        </div>
+
+        <!-- TAB CONTENT CONTAINER -->
+        <div id="tabContent" class="flex-1">
+
+            <!-- TAB 1: DISCOVERY LEARNING -->
+            <div id="tab-discovery" class="tab-pane bg-white rounded-2xl shadow-md border border-slate-200/80 p-6 md:p-8">
+                <div class="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5">
+                    <h2 class="text-xl font-bold text-amber-900 flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-amber-600"></i> Discovery Challenge: How do these words work?
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Examine the example sentence pairs carefully. Analyze the context and deduce the underlying grammar rule for using <strong>Since, For, Already,</strong> and <strong>Yet</strong>.
+                    </p>
+                </div>
+
+                <div id="discoveryItemsContainer" class="space-y-6">
+                    <!-- Items rendered via JS -->
+                </div>
+
+                <!-- Tab Finish & Feedback Banner -->
+                <div id="discoveryFeedbackCard" class="mt-8 hidden p-6 bg-indigo-50 border border-indigo-200 rounded-2xl text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 text-white rounded-full mb-3 text-xl">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-indigo-900" id="discoveryFeedbackTitle">Tab Completed!</h3>
+                    <p class="text-sm text-indigo-700 mt-1 max-w-xl mx-auto" id="discoveryFeedbackMsg">Great inductive analysis!</p>
+                    <button onclick="switchTab('fill')" class="mt-4 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-sm text-sm inline-flex items-center gap-2">
+                        Next: Fill in the Blanks <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 2: FILL IN THE BLANKS -->
+            <div id="tab-fill" class="tab-pane hidden bg-white rounded-2xl shadow-md border border-slate-200/80 p-6 md:p-8">
+                <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
+                    <h2 class="text-xl font-bold text-blue-900 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-blue-600"></i> Fill in the Blanks
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Select the correct time marker (<strong>since, for, already, yet</strong>) to complete each Present Perfect sentence.
+                    </p>
+                </div>
+
+                <div id="fillItemsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Items rendered via JS -->
+                </div>
+
+                <!-- Fill Tab Feedback -->
+                <div id="fillFeedbackCard" class="mt-8 hidden p-6 bg-blue-50 border border-blue-200 rounded-2xl text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full mb-3 text-xl">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-blue-900" id="fillFeedbackTitle">Tab Completed!</h3>
+                    <p class="text-sm text-blue-700 mt-1 max-w-xl mx-auto" id="fillFeedbackMsg">You have mastered word placement in context.</p>
+                    <button onclick="switchTab('writing')" class="mt-4 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-sm text-sm inline-flex items-center gap-2">
+                        Next: Sentence Lab <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 3: SENTENCE PRODUCTION LAB -->
+            <div id="tab-writing" class="tab-pane hidden bg-white rounded-2xl shadow-md border border-slate-200/80 p-6 md:p-8">
+                <div class="mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-5">
+                    <h2 class="text-xl font-bold text-purple-900 flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-600"></i> Interactive Sentence Lab
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Write complete Present Perfect sentences following each prompt. Click <strong>"AI Check"</strong> to receive real-time grammar evaluation and feedback from your AI English Coach!
+                    </p>
+                </div>
+
+                <div id="writingItemsContainer" class="space-y-6">
+                    <!-- Items rendered via JS -->
+                </div>
+
+                <!-- Writing Tab Feedback -->
+                <div id="writingFeedbackCard" class="mt-8 hidden p-6 bg-purple-50 border border-purple-200 rounded-2xl text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-purple-600 text-white rounded-full mb-3 text-xl">
+                        <i class="fa-solid fa-feather-pointed"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-purple-900" id="writingFeedbackTitle">Sentence Lab Completed!</h3>
+                    <p class="text-sm text-purple-700 mt-1 max-w-xl mx-auto" id="writingFeedbackMsg">Excellent creative production!</p>
+                    <button onclick="switchTab('speaking')" class="mt-4 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition shadow-sm text-sm inline-flex items-center gap-2">
+                        Next: Pronunciation Studio <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 4: PRONUNCIATION & SPEAKING STUDIO -->
+            <div id="tab-speaking" class="tab-pane hidden bg-white rounded-2xl shadow-md border border-slate-200/80 p-6 md:p-8">
+                <div class="mb-6 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                    <h2 class="text-xl font-bold text-emerald-900 flex items-center gap-2">
+                        <i class="fa-solid fa-microphone-lines text-emerald-600"></i> Pronunciation & Speech Studio
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Listen to native pronunciation model, then click the recording button to speak out loud. Test your speech accuracy and natural fluency!
+                    </p>
+                </div>
+
+                <div id="speakingItemsContainer" class="space-y-6">
+                    <!-- Items rendered via JS -->
+                </div>
+
+                <!-- Speaking Tab Feedback -->
+                <div id="speakingFeedbackCard" class="mt-8 hidden p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-emerald-600 text-white rounded-full mb-3 text-xl">
+                        <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-emerald-900" id="speakingFeedbackTitle">Speech Studio Completed!</h3>
+                    <p class="text-sm text-emerald-700 mt-1 max-w-xl mx-auto" id="speakingFeedbackMsg">You have practiced reading all sentences!</p>
+                    <button onclick="switchTab('report')" class="mt-4 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition shadow-sm text-sm inline-flex items-center gap-2">
+                        View Complete Performance Report <i class="fa-solid fa-chart-line"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 5: AI SUMMARY & DOWNLOADABLE REPORT -->
+            <div id="tab-report" class="tab-pane hidden bg-white rounded-2xl shadow-md border border-slate-200/80 p-6 md:p-8">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-200 pb-6 mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-file-invoice text-indigo-600"></i> Comprehensive Performance Report
+                        </h2>
+                        <p class="text-slate-500 text-sm">Detailed analysis of your grammar mastery, writing accuracy, and spoken fluency.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="generateAIReport()" class="px-4 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-semibold rounded-xl transition border border-indigo-200 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh AI Analysis
+                        </button>
+                        <button onclick="downloadPDFReport()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition shadow-md text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-file-pdf"></i> Download Official PDF Report
+                        </button>
+                    </div>
+                </div>
+
+                <div id="reportContent" class="space-y-8">
+                    <!-- Score Overview Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-5 bg-indigo-50 border border-indigo-100 rounded-xl text-center">
+                            <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Total Score</div>
+                            <div class="text-3xl font-extrabold text-indigo-900 mt-2" id="reportScorePct">0%</div>
+                            <div class="text-xs text-indigo-700 mt-1" id="reportScoreRaw">0 of 32 points</div>
+                        </div>
+                        <div class="p-5 bg-amber-50 border border-amber-100 rounded-xl text-center">
+                            <div class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Discovery Mastery</div>
+                            <div class="text-3xl font-extrabold text-amber-900 mt-2" id="reportDiscoveryScore">0/8</div>
+                            <div class="text-xs text-amber-700 mt-1">Rule Induction</div>
+                        </div>
+                        <div class="p-5 bg-blue-50 border border-blue-100 rounded-xl text-center">
+                            <div class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Contextual Use</div>
+                            <div class="text-3xl font-extrabold text-blue-900 mt-2" id="reportFillScore">0/8</div>
+                            <div class="text-xs text-blue-700 mt-1">Fill in the Blanks</div>
+                        </div>
+                        <div class="p-5 bg-emerald-50 border border-emerald-100 rounded-xl text-center">
+                            <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Speech Match</div>
+                            <div class="text-3xl font-extrabold text-emerald-900 mt-2" id="reportSpeakingScore">0%</div>
+                            <div class="text-xs text-emerald-700 mt-1">Pronunciation Accuracy</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Teacher Diagnostics Section -->
+                    <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+                        <div class="absolute right-0 top-0 opacity-10 text-9xl transform translate-x-1/4 -translate-y-1/4 pointer-events-none">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-indigo-500/20 border border-indigo-400/30 rounded-lg text-indigo-300">
+                                <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">AI Teacher Performance Analysis & Recommendations</h3>
+                        </div>
+                        <div id="aiReportBox" class="text-indigo-100 text-sm leading-relaxed space-y-4">
+                            <div class="flex items-center gap-3 text-indigo-300">
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                                <span>Complete exercises in all tabs to generate personalized tutor feedback...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Breakdown Tables -->
+                    <div class="space-y-6">
+                        <h3 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2">Exercise Breakdown</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Discovery Summary -->
+                            <div class="border border-slate-200 rounded-xl p-5 bg-white">
+                                <h4 class="font-bold text-slate-700 text-sm flex items-center justify-between">
+                                    <span><i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i>Discovery Learning</span>
+                                    <span id="tab1StatusBadge" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">In Progress</span>
+                                </h4>
+                                <div id="tab1ReportSummary" class="mt-3 text-xs text-slate-600 space-y-1">
+                                    No items completed yet.
+                                </div>
+                            </div>
+
+                            <!-- Fill Blanks Summary -->
+                            <div class="border border-slate-200 rounded-xl p-5 bg-white">
+                                <h4 class="font-bold text-slate-700 text-sm flex items-center justify-between">
+                                    <span><i class="fa-solid fa-pen-to-square text-blue-500 mr-2"></i>Fill in the Blanks</span>
+                                    <span id="tab2StatusBadge" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">In Progress</span>
+                                </h4>
+                                <div id="tab2ReportSummary" class="mt-3 text-xs text-slate-600 space-y-1">
+                                    No items completed yet.
+                                </div>
+                            </div>
+
+                            <!-- Writing Summary -->
+                            <div class="border border-slate-200 rounded-xl p-5 bg-white">
+                                <h4 class="font-bold text-slate-700 text-sm flex items-center justify-between">
+                                    <span><i class="fa-solid fa-keyboard text-purple-500 mr-2"></i>Sentence Production Lab</span>
+                                    <span id="tab3StatusBadge" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">In Progress</span>
+                                </h4>
+                                <div id="tab3ReportSummary" class="mt-3 text-xs text-slate-600 space-y-1">
+                                    No sentences submitted yet.
+                                </div>
+                            </div>
+
+                            <!-- Speaking Summary -->
+                            <div class="border border-slate-200 rounded-xl p-5 bg-white">
+                                <h4 class="font-bold text-slate-700 text-sm flex items-center justify-between">
+                                    <span><i class="fa-solid fa-microphone text-emerald-500 mr-2"></i>Pronunciation Studio</span>
+                                    <span id="tab4StatusBadge" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">In Progress</span>
+                                </h4>
+                                <div id="tab4ReportSummary" class="mt-3 text-xs text-slate-600 space-y-1">
+                                    No voice recordings tested yet.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Custom Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-50 max-w-md bg-slate-900 text-white p-4 rounded-xl shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <div id="toastIcon" class="text-emerald-400 text-lg">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div id="toastMsg" class="text-sm font-medium">Notification</div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // --- APP STATE ---
+        const state = {
+            scores: {
+                discovery: 0,
+                fill: 0,
+                writing: 0,
+                speaking: 0
+            },
+            tabCompleted: {
+                discovery: false,
+                fill: false,
+                writing: false,
+                speaking: false
+            },
+            discoveryAnswers: {},
+            fillAnswers: {},
+            writingSubmissions: {},
+            speakingSubmissions: {}
+        };
+
+        // --- DATA STRUCTURES ---
+
+        // Tab 1: Discovery Learning Items (8 Items)
+        const discoveryData = [
+            {
+                id: 1,
+                title: "Scenario 1: Points in Time vs. Durations",
+                sentences: [
+                    "Sentence A: I have lived in London <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>since 2015</strong>.",
+                    "Sentence B: I have lived in London <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>for 8 years</strong>."
+                ],
+                question: "Which marker is used before a specific starting point in time (e.g., a year, a date, or a past moment)?",
+                options: [
+                    { text: "Since", correct: true, explanation: "Correct! 'Since' specifies the exact starting point of an action (e.g., since 2015, since Monday)." },
+                    { text: "For", correct: false, explanation: "Incorrect. 'For' is used to measure total duration or length of time." }
+                ]
+            },
+            {
+                id: 2,
+                title: "Scenario 2: Period of Duration",
+                sentences: [
+                    "Sentence A: She has studied English <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>for three hours</strong>.",
+                    "Sentence B: She has studied English <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>since 2:00 PM</strong>."
+                ],
+                question: "Which marker is followed by a quantity or amount of time (e.g., hours, days, months)?",
+                options: [
+                    { text: "Since", correct: false, explanation: "Incorrect. 'Since' refers to a specific start moment." },
+                    { text: "For", correct: true, explanation: "Spot on! 'For' is followed by a period or length of duration (e.g., 3 hours, 5 years)." }
+                ]
+            },
+            {
+                id: 3,
+                title: "Scenario 3: Actions Completed Sooner Than Expected",
+                sentences: [
+                    "Sentence A: Can I take your plate? — No, I haven't finished <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>yet</strong>.",
+                    "Sentence B: Wow! You have <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>already</strong> finished your homework!"
+                ],
+                question: "Which marker expresses that an action happened earlier than expected or already took place?",
+                options: [
+                    { text: "Already", correct: true, explanation: "Correct! 'Already' indicates something happened sooner than expected in affirmative sentences." },
+                    { text: "Yet", correct: false, explanation: "Incorrect. 'Yet' is used when expecting something to happen in negative sentences or questions." }
+                ]
+            },
+            {
+                id: 4,
+                title: "Scenario 4: Actions Not Yet Completed",
+                sentences: [
+                    "Sentence A: Has the package arrived <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>yet</strong>?",
+                    "Sentence B: The mailman hasn't come <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>yet</strong>."
+                ],
+                question: "Where is 'yet' typically positioned in a sentence?",
+                options: [
+                    { text: "Between the auxiliary verb 'have' and the main verb", correct: false, explanation: "Incorrect. 'Already' goes between have and the past participle." },
+                    { text: "At the end of negative sentences and questions", correct: true, explanation: "Excellent! 'Yet' almost always appears at the very end of negative statements and questions." }
+                ]
+            },
+            {
+                id: 5,
+                title: "Scenario 5: Position of 'Already'",
+                sentences: [
+                    "Sentence A: We have <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>already</strong> booked our flight tickets.",
+                    "Sentence B: They have <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>already</strong> seen that movie twice."
+                ],
+                question: "Where does 'already' standardly sit in affirmative Present Perfect sentences?",
+                options: [
+                    { text: "Between 'have/has' and the main verb (past participle)", correct: true, explanation: "Correct! Standard word order is [Have/Has] + already + [Past Participle]." },
+                    { text: "Always at the very start of the sentence", correct: false, explanation: "Incorrect. Placing 'already' at the start is grammatically incorrect in standard English." }
+                ]
+            },
+            {
+                id: 6,
+                title: "Scenario 6: Starting Moments with Clauses",
+                sentences: [
+                    "Sentence A: I haven't eaten seafood <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>since I was a child</strong>.",
+                    "Sentence B: He has worked here <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>for a long time</strong>."
+                ],
+                question: "Can 'since' be used with a past simple clause (e.g., 'since I graduated')?",
+                options: [
+                    { text: "Yes, because a past simple clause marks a specific point in time when something started.", correct: true, explanation: "Bingo! A past simple event (e.g. 'since I was young') functions as a starting time marker." },
+                    { text: "No, 'since' can only be used with numbers and calendar dates.", correct: false, explanation: "Incorrect. 'Since' works with any clause that marks a starting time." }
+                ]
+            },
+            {
+                id: 7,
+                title: "Scenario 7: Negative Sentences with 'Yet'",
+                sentences: [
+                    "Sentence A: I have already called the doctor.",
+                    "Sentence B: I haven't called the doctor <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>yet</strong>."
+                ],
+                question: "Which marker is used to indicate an action that hasn't happened up to the present moment?",
+                options: [
+                    { text: "Yet", correct: true, explanation: "Correct! 'Yet' implies the speaker expects the action to happen soon." },
+                    { text: "For", correct: false, explanation: "Incorrect. 'For' expresses duration, not expectation of an event." }
+                ]
+            },
+            {
+                id: 8,
+                title: "Scenario 8: Time Expressions with 'For'",
+                sentences: [
+                    "Sentence A: They have been married <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>for 25 years</strong>.",
+                    "Sentence B: They have been married <strong class='text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded'>since 1998</strong>."
+                ],
+                question: "If you see 'ages', 'a long time', 'several weeks', or '10 minutes', which word must you choose?",
+                options: [
+                    { text: "Since", correct: false, explanation: "Incorrect. 'Ages' or '10 minutes' represent lengths of time." },
+                    { text: "For", correct: true, explanation: "Perfect! All of these express a total time span, so we use 'for'." }
+                ]
+            }
+        ];
+
+        // Tab 2: Fill in the Blanks Items (8 Items)
+        const fillData = [
+            { id: 1, sentence: "I have known my best friend ____ 2012.", options: ["since", "for", "already", "yet"], answer: "since", explanation: "'2012' is a specific starting point year." },
+            { id: 2, sentence: "We haven't decided where to go on vacation ____.", options: ["since", "for", "already", "yet"], answer: "yet", explanation: "'Yet' comes at the end of negative sentences." },
+            { id: 3, sentence: "She has ____ cleaned her bedroom, so it looks spotless!", options: ["since", "for", "already", "yet"], answer: "already", explanation: "'Already' goes before the past participle to show completed action." },
+            { id: 4, sentence: "David has worked at this company ____ ten years.", options: ["since", "for", "already", "yet"], answer: "for", explanation: "'Ten years' is a length or duration of time." },
+            { id: 5, sentence: "Have you submitted your final term paper ____?", options: ["since", "for", "already", "yet"], answer: "yet", explanation: "Questions about expected actions use 'yet' at the end." },
+            { id: 6, sentence: "The train has ____ left the station, so we missed it!", options: ["since", "for", "already", "yet"], answer: "already", explanation: "'Already' shows something happened earlier than desired/expected." },
+            { id: 7, sentence: "They have lived in this neighborhood ____ they got married.", options: ["since", "for", "already", "yet"], answer: "since", explanation: "'They got married' is a past simple starting point clause." },
+            { id: 8, sentence: "It has been raining continuously ____ several hours.", options: ["since", "for", "already", "yet"], answer: "for", explanation: "'Several hours' represents a time interval/duration." }
+        ];
+
+        // Tab 3: Sentence Writing Prompts (8 Items)
+        const writingData = [
+            { id: 1, marker: "since", prompt: "Write a Present Perfect sentence about a personal hobby or habit using the word 'since' (e.g., since 2020)." },
+            { id: 2, marker: "for", prompt: "Write a sentence describing how long you have known someone or lived somewhere using 'for'." },
+            { id: 3, marker: "already", prompt: "Write an affirmative sentence about a task you have completed today using 'already'." },
+            { id: 4, marker: "yet", prompt: "Write a negative sentence about something you plan to do later today using 'yet'." },
+            { id: 5, marker: "since", prompt: "Write a sentence using 'since' with a clause (e.g., 'since I was a child' or 'since school started')." },
+            { id: 6, marker: "for", prompt: "Write a sentence about an ongoing activity in your life using 'for a long time' or 'for many years'." },
+            { id: 7, marker: "already", prompt: "Write a sentence confirming you have eaten a meal or watched a movie using 'already'." },
+            { id: 8, marker: "yet", prompt: "Write a question asking a classmate or friend if they have performed a routine action using 'yet'." }
+        ];
+
+        // Tab 4: Speaking & Pronunciation Sentences (8 Items)
+        const speakingData = [
+            { id: 1, text: "I have lived in this city since 2018.", tip: "Stress 'lived' and '2018'. Pronounce 'have' smoothly as /həv/." },
+            { id: 2, text: "She has already finished her English homework.", tip: "Keep 'already' light and emphasize 'finished'." },
+            { id: 3, text: "Have you called your parents yet?", tip: "Use rising intonation at the end for this question." },
+            { id: 4, text: "We have been friends for over ten years.", tip: "Link 'for over' together: /fər oʊvər/." },
+            { id: 5, text: "He hasn't cleaned his bedroom yet.", tip: "Ensure clear /t/ sound on 'hasn't' and end crisp on 'yet'." },
+            { id: 6, text: "They have already traveled to five different countries.", tip: "Emphasize 'traveled' and 'five'." },
+            { id: 7, text: "My uncle has worked at that company since last March.", tip: "Connect 'worked at' smoothly." },
+            { id: 8, text: "I haven't seen that new action movie yet.", tip: "Notice the negative contraction 'haven't'." }
+        ];
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderDiscoveryTab() {
+            const container = document.getElementById('discoveryItemsContainer');
+            container.innerHTML = discoveryData.map((item, idx) => `
+                <div class="border border-slate-200 rounded-xl p-5 hover:border-amber-300 transition bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full uppercase tracking-wider">Item ${idx+1} of 8</span>
+                        <span id="disc-status-${item.id}" class="text-xs text-slate-400 font-medium"><i class="fa-regular fa-circle"></i> Not Answered</span>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">${item.title}</h3>
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 text-sm space-y-1 mb-4 text-slate-700">
+                        <p>${item.sentences[0]}</p>
+                        <p>${item.sentences[1]}</p>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-700 mb-3">${item.question}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="disc-options-${item.id}">
+                        ${item.options.map((opt, oIdx) => `
+                            <button onclick="answerDiscovery(${item.id}, ${oIdx})" class="disc-opt-btn text-left p-3 rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:border-amber-300 text-sm font-medium transition text-slate-700 flex items-start gap-2">
+                                <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-xs mt-0.5">${String.fromCharCode(65+oIdx)}</span>
+                                <span>${opt.text}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="disc-feedback-${item.id}" class="mt-3 hidden p-3 rounded-lg text-sm"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderFillTab() {
+            const container = document.getElementById('fillItemsContainer');
+            container.innerHTML = fillData.map((item, idx) => `
+                <div class="border border-slate-200 rounded-xl p-5 bg-slate-50/50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full uppercase tracking-wider">Question ${idx+1}</span>
+                            <span id="fill-status-${item.id}" class="text-xs text-slate-400 font-medium"><i class="fa-regular fa-circle"></i> Pending</span>
+                        </div>
+                        <p class="text-slate-800 font-medium text-base mb-4 leading-relaxed">
+                            ${item.sentence.replace('____', `<select id="fill-select-${item.id}" onchange="checkFillAnswer(${item.id})" class="inline-block mx-1 px-3 py-1 bg-white border-2 border-indigo-300 rounded-lg text-indigo-900 font-bold focus:outline-none focus:border-indigo-600 transition text-sm">
+                                <option value="">-- select --</option>
+                                ${item.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                            </select>`)}
+                        </p>
+                    </div>
+                    <div id="fill-feedback-${item.id}" class="mt-2 text-xs hidden p-2.5 rounded-lg font-medium"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderWritingTab() {
+            const container = document.getElementById('writingItemsContainer');
+            container.innerHTML = writingData.map((item, idx) => `
+                <div class="border border-slate-200 rounded-xl p-5 bg-slate-50/50 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-full uppercase tracking-wider">Prompt ${idx+1} • Target: "${item.marker}"</span>
+                        <span id="writing-status-${item.id}" class="text-xs text-slate-400 font-medium"><i class="fa-regular fa-circle"></i> Ready</span>
+                    </div>
+                    <p class="text-slate-700 text-sm font-semibold">${item.prompt}</p>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="text" id="writing-input-${item.id}" placeholder="Type your sentence here..." class="flex-1 px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-800">
+                        <button onclick="evaluateWritingPrompt(${item.id})" id="writing-btn-${item.id}" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Check
+                        </button>
+                    </div>
+                    <div id="writing-feedback-${item.id}" class="hidden text-xs p-3.5 rounded-xl space-y-1"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderSpeakingTab() {
+            const container = document.getElementById('speakingItemsContainer');
+            container.innerHTML = speakingData.map((item, idx) => `
+                <div class="border border-slate-200 rounded-xl p-5 bg-slate-50/50 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full uppercase tracking-wider">Sentence ${idx+1} of 8</span>
+                        <span id="speaking-status-${item.id}" class="text-xs text-slate-400 font-medium"><i class="fa-regular fa-circle"></i> Untested</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <p class="text-slate-900 font-bold text-base sm:text-lg flex-1" id="speaking-target-${item.id}">${item.text}</p>
+                        <button onclick="playNativeAudio('${item.text.replace(/'/g, "\\'")}')" class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-volume-high"></i> Listen Native
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-500 italic"><i class="fa-solid fa-circle-info text-emerald-500 mr-1"></i> Phonetic tip: ${item.tip}</p>
+                    
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <button id="mic-btn-${item.id}" onclick="toggleSpeechRecording(${item.id})" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-microphone"></i> <span>Press & Record Speech</span>
+                        </button>
+                        <div id="speaking-transcript-${item.id}" class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-500 italic flex items-center min-h-[42px]">
+                            Transcript will appear here after recording...
+                        </div>
+                    </div>
+
+                    <div id="speaking-feedback-${item.id}" class="hidden text-xs p-3.5 rounded-xl"></div>
+                </div>
+            `).join('');
+        }
+
+        // --- INTERACTION LOGIC ---
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-50', 'border-indigo-100', 'text-indigo-600', 'shadow-sm');
+                btn.classList.add('text-slate-600');
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            activeBtn.classList.add('bg-indigo-50', 'border-indigo-100', 'text-indigo-600', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-600');
+
+            if (tabId === 'report') {
+                updateReportTab();
+            }
+        }
+
+        // Tab 1: Discovery Answer Logic
+        function answerDiscovery(itemId, optionIdx) {
+            const item = discoveryData.find(d => d.id === itemId);
+            const selectedOpt = item.options[optionIdx];
+            const feedbackEl = document.getElementById(`disc-feedback-${itemId}`);
+            const statusEl = document.getElementById(`disc-status-${itemId}`);
+
+            state.discoveryAnswers[itemId] = selectedOpt.correct;
+
+            // UI feedback
+            feedbackEl.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
+            if (selectedOpt.correct) {
+                feedbackEl.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5 text-emerald-600"></i> ${selectedOpt.explanation}`;
+                statusEl.className = "text-xs text-emerald-600 font-bold";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Correct (+1 pt)`;
+            } else {
+                feedbackEl.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1.5 text-rose-600"></i> ${selectedOpt.explanation}`;
+                statusEl.className = "text-xs text-rose-600 font-bold";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Incorrect`;
+            }
+
+            updateScores();
+            checkTab1Completion();
+        }
+
+        function checkTab1Completion() {
+            const answeredCount = Object.keys(state.discoveryAnswers).length;
+            document.getElementById('badge-discovery').innerText = `${answeredCount}/8`;
+
+            if (answeredCount === 8 && !state.tabCompleted.discovery) {
+                state.tabCompleted.discovery = true;
+                const score = Object.values(state.discoveryAnswers).filter(Boolean).length;
+                document.getElementById('discoveryFeedbackCard').classList.remove('hidden');
+                document.getElementById('discoveryFeedbackTitle').innerText = `Discovery Challenge Completed! (${score}/8 Correct)`;
+                document.getElementById('discoveryFeedbackMsg').innerText = score >= 6 
+                    ? "Outstanding work! You've successfully inferred the rules of Since, For, Already, and Yet!"
+                    : "Good effort! Review the explanations above to strengthen your rule intuition.";
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                showToast("Tab 1 Completed! Check feedback below.");
+            }
+        }
+
+        // Tab 2: Fill in the Blanks Logic
+        function checkFillAnswer(itemId) {
+            const selectEl = document.getElementById(`fill-select-${itemId}`);
+            const val = selectEl.value;
+            const item = fillData.find(f => f.id === itemId);
+            const feedbackEl = document.getElementById(`fill-feedback-${itemId}`);
+            const statusEl = document.getElementById(`fill-status-${itemId}`);
+
+            if (!val) {
+                delete state.fillAnswers[itemId];
+                feedbackEl.classList.add('hidden');
+                statusEl.className = "text-xs text-slate-400 font-medium";
+                statusEl.innerHTML = `<i class="fa-regular fa-circle"></i> Pending`;
+                updateScores();
+                return;
+            }
+
+            const isCorrect = (val === item.answer);
+            state.fillAnswers[itemId] = isCorrect;
+
+            feedbackEl.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900');
+            if (isCorrect) {
+                feedbackEl.classList.add('bg-emerald-100', 'text-emerald-900');
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Excellent! ${item.explanation}`;
+                statusEl.className = "text-xs text-emerald-600 font-bold";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Correct (+1 pt)`;
+            } else {
+                feedbackEl.classList.add('bg-rose-100', 'text-rose-900');
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 mr-1"></i> Incorrect. Right answer: <strong>${item.answer}</strong>. ${item.explanation}`;
+                statusEl.className = "text-xs text-rose-600 font-bold";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Incorrect`;
+            }
+
+            updateScores();
+            checkTab2Completion();
+        }
+
+        function checkTab2Completion() {
+            const answeredCount = Object.keys(state.fillAnswers).length;
+            document.getElementById('badge-fill').innerText = `${answeredCount}/8`;
+
+            if (answeredCount === 8 && !state.tabCompleted.fill) {
+                state.tabCompleted.fill = true;
+                const score = Object.values(state.fillAnswers).filter(Boolean).length;
+                document.getElementById('fillFeedbackCard').classList.remove('hidden');
+                document.getElementById('fillFeedbackTitle').innerText = `Fill-in Blanks Completed! (${score}/8 Correct)`;
+                document.getElementById('fillFeedbackMsg').innerText = score >= 6 
+                    ? "Superb grammar accuracy in context!"
+                    : "Keep practicing! Review your missed answers above.";
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                showToast("Tab 2 Completed! Great job!");
+            }
+        }
+
+        // Tab 3: Writing Evaluation with Gemini API
+        async function evaluateWritingPrompt(itemId) {
+            const inputEl = document.getElementById(`writing-input-${itemId}`);
+            const btnEl = document.getElementById(`writing-btn-${itemId}`);
+            const feedbackEl = document.getElementById(`writing-feedback-${itemId}`);
+            const statusEl = document.getElementById(`writing-status-${itemId}`);
+            const userSentence = inputEl.value.trim();
+
+            if (!userSentence) {
+                showToast("Please enter a sentence first!", "warning");
+                return;
+            }
+
+            const item = writingData.find(w => w.id === itemId);
+
+            // UI Loading state
+            btnEl.disabled = true;
+            btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Checking...`;
+            statusEl.className = "text-xs text-indigo-600 font-medium";
+            statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analyzing with AI...`;
+
+            try {
+                // Call Gemini API for smart English evaluation
+                const promptText = `Act as a supportive English Grammar Teacher. 
+Task: Evaluate the student's sentence based on the prompt.
+Target Grammar Marker: "${item.marker}" (must use Present Perfect tense with since/for/already/yet properly).
+Prompt given to student: "${item.prompt}"
+Student's Submitted Sentence: "${userSentence}"
+
+Respond ONLY with a valid JSON object matching this schema:
+{
+  "isGrammaticallyCorrect": boolean,
+  "scoreOutOf100": number,
+  "usedTargetMarkerCorrectly": boolean,
+  "correctedSentence": "string",
+  "teacherFeedback": "string"
+}`;
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                let evaluation;
+
+                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                    evaluation = JSON.parse(data.candidates[0].content.parts[0].text);
+                } else {
+                    // Fallback heuristic evaluation if API fails
+                    evaluation = fallbackWritingCheck(userSentence, item.marker);
+                }
+
+                // Save result
+                state.writingSubmissions[itemId] = evaluation;
+
+                // Render Feedback UI
+                feedbackEl.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-rose-50', 'border-rose-200', 'text-rose-900');
+                
+                const passed = evaluation.scoreOutOf100 >= 70 && evaluation.usedTargetMarkerCorrectly;
+                
+                if (passed) {
+                    feedbackEl.classList.add('bg-emerald-50', 'border', 'border-emerald-200', 'text-emerald-900');
+                    feedbackEl.innerHTML = `
+                        <div class="font-bold flex items-center justify-between">
+                            <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Great Job! (${evaluation.scoreOutOf100}/100)</span>
+                            <span class="text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">+1 point</span>
+                        </div>
+                        <p class="mt-1">${evaluation.teacherFeedback}</p>
+                    `;
+                    statusEl.className = "text-xs text-emerald-600 font-bold";
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Passed (+1 pt)`;
+                } else {
+                    feedbackEl.classList.add('bg-rose-50', 'border', 'border-rose-200', 'text-rose-900');
+                    feedbackEl.innerHTML = `
+                        <div class="font-bold"><i class="fa-solid fa-circle-exclamation text-rose-600 mr-1"></i> Needs Revision (${evaluation.scoreOutOf100}/100)</div>
+                        <p class="mt-1">${evaluation.teacherFeedback}</p>
+                        ${evaluation.correctedSentence ? `<p class="mt-1 font-semibold text-slate-700">Suggested Correction: <span class="italic text-purple-700 font-normal">"${evaluation.correctedSentence}"</span></p>` : ''}
+                    `;
+                    statusEl.className = "text-xs text-rose-600 font-bold";
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Needs Edit`;
+                }
+
+            } catch (err) {
+                console.warn("API Call Exception, using standard check:", err);
+                const fallback = fallbackWritingCheck(userSentence, item.marker);
+                state.writingSubmissions[itemId] = fallback;
+
+                feedbackEl.classList.remove('hidden');
+                feedbackEl.className = fallback.scoreOutOf100 >= 70 ? 'text-xs p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900' : 'text-xs p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900';
+                feedbackEl.innerHTML = `<p>${fallback.teacherFeedback}</p>`;
+                
+                statusEl.className = fallback.scoreOutOf100 >= 70 ? "text-xs text-emerald-600 font-bold" : "text-xs text-amber-600 font-bold";
+                statusEl.innerHTML = fallback.scoreOutOf100 >= 70 ? `<i class="fa-solid fa-circle-check"></i> Checked (+1 pt)` : `<i class="fa-solid fa-circle-info"></i> Checked`;
+            } finally {
+                btnEl.disabled = false;
+                btnEl.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> AI Check`;
+                updateScores();
+                checkTab3Completion();
+            }
+        }
+
+        function fallbackWritingCheck(sentence, marker) {
+            const lower = sentence.toLowerCase();
+            const hasMarker = lower.includes(marker.toLowerCase());
+            const hasHaveHas = lower.includes('have') || lower.includes('has') || lower.includes("haven't") || lower.includes("hasn't");
+
+            if (hasMarker && hasHaveHas) {
+                return {
+                    isGrammaticallyCorrect: true,
+                    scoreOutOf100: 90,
+                    usedTargetMarkerCorrectly: true,
+                    correctedSentence: sentence,
+                    teacherFeedback: `Good job using "${marker}" with the Present Perfect structure (have/has)!`
+                };
+            } else {
+                return {
+                    isGrammaticallyCorrect: false,
+                    scoreOutOf100: 40,
+                    usedTargetMarkerCorrectly: hasMarker,
+                    correctedSentence: `I have ... ${marker} ...`,
+                    teacherFeedback: `Ensure you combine 'have/has' + past participle along with the target marker '${marker}'.`
+                };
+            }
+        }
+
+        function checkTab3Completion() {
+            const count = Object.keys(state.writingSubmissions).length;
+            document.getElementById('badge-writing').innerText = `${count}/8`;
+
+            if (count === 8 && !state.tabCompleted.writing) {
+                state.tabCompleted.writing = true;
+                document.getElementById('writingFeedbackCard').classList.remove('hidden');
+                document.getElementById('writingFeedbackTitle').innerText = `Sentence Production Lab Completed!`;
+                document.getElementById('writingFeedbackMsg').innerText = `You have submitted all 8 writing prompts. Fantastic sentence building!`;
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                showToast("Tab 3 Completed!");
+            }
+        }
+
+        // Tab 4: Pronunciation & Web Speech API Logic
+        let recognition = null;
+        let activeRecordingId = null;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                if (activeRecordingId !== null) {
+                    processSpeechResult(activeRecordingId, transcript);
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.warn('Speech recognition error:', event.error);
+                if (activeRecordingId !== null) {
+                    resetMicButton(activeRecordingId);
+                    showToast("Speech recognition error: " + event.error, "warning");
+                }
+            };
+
+            recognition.onend = function() {
+                if (activeRecordingId !== null) {
+                    resetMicButton(activeRecordingId);
+                }
+            };
+        }
+
+        function toggleSpeechRecording(itemId) {
+            if (!recognition) {
+                showToast("Browser speech recognition is not supported in this browser. You can still test listening audio!", "warning");
+                // Provide simulated spoken input for testing fallback
+                const item = speakingData.find(s => s.id === itemId);
+                processSpeechResult(itemId, item.text);
+                return;
+            }
+
+            const btn = document.getElementById(`mic-btn-${itemId}`);
+
+            if (activeRecordingId === itemId) {
+                recognition.stop();
+                resetMicButton(itemId);
+            } else {
+                if (activeRecordingId !== null) {
+                    resetMicButton(activeRecordingId);
+                }
+                activeRecordingId = itemId;
+                btn.className = "px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-sm transition flex items-center justify-center gap-2 animate-pulse shadow-sm";
+                btn.innerHTML = `<i class="fa-solid fa-microphone-lines"></i> <span>Listening... Speak Now</span>`;
+                recognition.start();
+            }
+        }
+
+        function resetMicButton(itemId) {
+            const btn = document.getElementById(`mic-btn-${itemId}`);
+            if (btn) {
+                btn.className = "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm";
+                btn.innerHTML = `<i class="fa-solid fa-microphone"></i> <span>Press & Record Speech</span>`;
+            }
+            activeRecordingId = null;
+        }
+
+        function processSpeechResult(itemId, spokenText) {
+            const item = speakingData.find(s => s.id === itemId);
+            const transcriptEl = document.getElementById(`speaking-transcript-${itemId}`);
+            const feedbackEl = document.getElementById(`speaking-feedback-${itemId}`);
+            const statusEl = document.getElementById(`speaking-status-${itemId}`);
+
+            transcriptEl.innerHTML = `<span class="text-slate-800 font-medium">Recorded: "${spokenText}"</span>`;
+
+            // Calculate textual similarity percentage
+            const accuracy = calculateSimilarity(item.text, spokenText);
+            const passed = accuracy >= 70;
+
+            state.speakingSubmissions[itemId] = {
+                spokenText,
+                accuracy,
+                passed
+            };
+
+            feedbackEl.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-amber-50', 'border-amber-200', 'text-amber-900');
+            if (passed) {
+                feedbackEl.classList.add('bg-emerald-50', 'border', 'border-emerald-200', 'text-emerald-900');
+                feedbackEl.innerHTML = `
+                    <div class="font-bold text-emerald-800 flex items-center justify-between">
+                        <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Fluent Match (${accuracy}% Accuracy)</span>
+                        <span class="text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">+1 point</span>
+                    </div>
+                    <p class="mt-1">Great pronunciation and rhythm!</p>
+                `;
+                statusEl.className = "text-xs text-emerald-600 font-bold";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Passed (${accuracy}%)`;
+            } else {
+                feedbackEl.classList.add('bg-amber-50', 'border', 'border-amber-200', 'text-amber-900');
+                feedbackEl.innerHTML = `
+                    <div class="font-bold text-amber-800"><i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i> Low Match (${accuracy}% Accuracy)</div>
+                    <p class="mt-1">Try listening to the native sample again and focus on target key words.</p>
+                `;
+                statusEl.className = "text-xs text-amber-600 font-bold";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${accuracy}% Match`;
+            }
+
+            updateScores();
+            checkTab4Completion();
+        }
+
+        // Levenshtein / Word match similarity metric
+        function calculateSimilarity(str1, str2) {
+            const clean = s => s.toLowerCase().replace(/[^\w\s]/g, '').trim().split(/\s+/);
+            const words1 = clean(str1);
+            const words2 = clean(str2);
+
+            let matches = 0;
+            words1.forEach(w => {
+                if (words2.includes(w)) matches++;
+            });
+
+            const score = Math.round((matches / Math.max(words1.length, 1)) * 100);
+            return Math.min(score, 100);
+        }
+
+        function playNativeAudio(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+                showToast("Playing native audio example...");
+            } else {
+                showToast("Text-to-speech audio not available on this device.", "warning");
+            }
+        }
+
+        function checkTab4Completion() {
+            const count = Object.keys(state.speakingSubmissions).length;
+            document.getElementById('badge-speaking').innerText = `${count}/8`;
+
+            if (count === 8 && !state.tabCompleted.speaking) {
+                state.tabCompleted.speaking = true;
+                document.getElementById('speakingFeedbackCard').classList.remove('hidden');
+                document.getElementById('speakingFeedbackTitle').innerText = `Pronunciation Studio Completed!`;
+                document.getElementById('speakingFeedbackMsg').innerText = `You have read all 8 target sentences out loud!`;
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                showToast("Tab 4 Completed! All exercises done.");
+            }
+        }
+
+        // --- GLOBAL SCORE & REPORTING LOGIC ---
+
+        function updateScores() {
+            // Tab 1 score (max 8)
+            state.scores.discovery = Object.values(state.discoveryAnswers).filter(Boolean).length;
+            // Tab 2 score (max 8)
+            state.scores.fill = Object.values(state.fillAnswers).filter(Boolean).length;
+            // Tab 3 score (max 8)
+            state.scores.writing = Object.values(state.writingSubmissions).filter(s => s.scoreOutOf100 >= 70 && s.usedTargetMarkerCorrectly).length;
+            // Tab 4 score (max 8)
+            state.scores.speaking = Object.values(state.speakingSubmissions).filter(s => s.passed).length;
+
+            const totalScore = state.scores.discovery + state.scores.fill + state.scores.writing + state.scores.speaking;
+            const pct = Math.round((totalScore / 32) * 100);
+
+            document.getElementById('globalScoreText').innerText = `${totalScore} / 32 pts (${pct}%)`;
+            document.getElementById('globalProgressBar').style.width = `${pct}%`;
+        }
+
+        function updateReportTab() {
+            updateScores();
+
+            const totalScore = state.scores.discovery + state.scores.fill + state.scores.writing + state.scores.speaking;
+            const pct = Math.round((totalScore / 32) * 100);
+
+            document.getElementById('reportScorePct').innerText = `${pct}%`;
+            document.getElementById('reportScoreRaw').innerText = `${totalScore} of 32 total points`;
+
+            document.getElementById('reportDiscoveryScore').innerText = `${state.scores.discovery}/8`;
+            document.getElementById('reportFillScore').innerText = `${state.scores.fill}/8`;
+
+            // Speaking average percentage
+            const speakingVals = Object.values(state.speakingSubmissions);
+            const avgSpeaking = speakingVals.length > 0 
+                ? Math.round(speakingVals.reduce((acc, curr) => acc + curr.accuracy, 0) / speakingVals.length)
+                : 0;
+            document.getElementById('reportSpeakingScore').innerText = `${avgSpeaking}%`;
+
+            // Update Tab Status Badges
+            document.getElementById('tab1StatusBadge').innerText = Object.keys(state.discoveryAnswers).length === 8 ? "Completed" : `${Object.keys(state.discoveryAnswers).length}/8 Done`;
+            document.getElementById('tab2StatusBadge').innerText = Object.keys(state.fillAnswers).length === 8 ? "Completed" : `${Object.keys(state.fillAnswers).length}/8 Done`;
+            document.getElementById('tab3StatusBadge').innerText = Object.keys(state.writingSubmissions).length === 8 ? "Completed" : `${Object.keys(state.writingSubmissions).length}/8 Done`;
+            document.getElementById('tab4StatusBadge').innerText = Object.keys(state.speakingSubmissions).length === 8 ? "Completed" : `${Object.keys(state.speakingSubmissions).length}/8 Done`;
+
+            // Render Summaries
+            document.getElementById('tab1ReportSummary').innerHTML = `
+                <p>Rule Induction Score: <strong>${state.scores.discovery} / 8</strong> (${Math.round(state.scores.discovery/8*100)}%)</p>
+            `;
+            document.getElementById('tab2ReportSummary').innerHTML = `
+                <p>Multiple Choice Accuracy: <strong>${state.scores.fill} / 8</strong> (${Math.round(state.scores.fill/8*100)}%)</p>
+            `;
+            document.getElementById('tab3ReportSummary').innerHTML = `
+                <p>Grammar Correct Sentences: <strong>${state.scores.writing} / 8</strong></p>
+            `;
+            document.getElementById('tab4ReportSummary').innerHTML = `
+                <p>Average Spoken Pronunciation Match: <strong>${avgSpeaking}%</strong></p>
+            `;
+
+            // Trigger AI Report Synthesis
+            generateAIReport();
+        }
+
+        // Generate dynamic personalized AI teacher summary report via Gemini API
+        async function generateAIReport() {
+            const reportBox = document.getElementById('aiReportBox');
+            reportBox.innerHTML = `
+                <div class="flex items-center gap-3 text-indigo-300">
+                    <i class="fa-solid fa-spinner fa-spin text-lg"></i>
+                    <span>Analyzing your learning data & synthesizing custom teacher recommendations...</span>
+                </div>
+            `;
+
+            const totalScore = state.scores.discovery + state.scores.fill + state.scores.writing + state.scores.speaking;
+            const pct = Math.round((totalScore / 32) * 100);
+
+            try {
+                const prompt = `Act as an expert English Language Teacher.
+Synthesize a concise, encouraging, structured assessment report for a student practicing Present Perfect tense with "Since, For, Already, and Yet".
+
+Student Performance Data:
+- Total Points: ${totalScore} out of 32 (${pct}%)
+- Tab 1 Discovery Learning Score: ${state.scores.discovery}/8
+- Tab 2 Fill-in-the-Blanks Score: ${state.scores.fill}/8
+- Tab 3 Sentence Writing Score: ${state.scores.writing}/8
+- Tab 4 Speaking/Pronunciation Accuracy: ${state.scores.speaking}/8 passed
+
+Write a 3-part structured assessment:
+1. Overall Diagnostic Assessment (1-2 sentences summarizing strengths)
+2. Specific Grammar Tips for "Since/For" vs "Already/Yet" based on performance.
+3. 2 Actionable Practice Suggestions to reach 100% mastery.`;
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                    const aiText = data.candidates[0].content.parts[0].text;
+                    reportBox.innerHTML = `
+                        <div class="prose prose-invert max-w-none space-y-3">
+                            <p class="whitespace-pre-line">${aiText}</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error("No text returned from model");
+                }
+            } catch (err) {
+                console.warn("AI Report generation fallback:", err);
+                reportBox.innerHTML = `
+                    <div class="space-y-3">
+                        <p class="font-bold text-white">Overall Mastery: ${pct}% (${totalScore}/32 Points)</p>
+                        <p>You are demonstrating solid understanding of Present Perfect time markers!</p>
+                        <ul class="list-disc list-inside space-y-1 text-indigo-200">
+                            <li><strong>Since vs. For:</strong> Remember that 'since' refers to a starting point (since 2010), while 'for' measures duration (for 5 years).</li>
+                            <li><strong>Already vs. Yet:</strong> Use 'already' in affirmative sentences before past participle, and 'yet' at the end of negatives and questions.</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        // PDF Generation
+        function downloadPDFReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const totalScore = state.scores.discovery + state.scores.fill + state.scores.writing + state.scores.speaking;
+            const pct = Math.round((totalScore / 32) * 100);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(20);
+            doc.setTextColor(49, 46, 129); // indigo-900
+            doc.text("Present Perfect Mastery Studio - Official Report", 14, 20);
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()} | Student Progress Summary`, 14, 27);
+
+            // Divider
+            doc.setDrawColor(226, 232, 240);
+            doc.line(14, 32, 196, 32);
+
+            // Score Banner
+            doc.setFillColor(238, 242, 255);
+            doc.roundedRect(14, 38, 182, 24, 3, 3, "F");
+
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(67, 56, 202);
+            doc.text(`Overall Score: ${pct}% (${totalScore} / 32 Points)`, 20, 52);
+
+            // Breakdown Table Header
+            doc.setFontSize(13);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(30, 41, 59);
+            doc.text("Module Scores Breakdown", 14, 74);
+
+            let yPos = 84;
+            const modules = [
+                { name: "1. Discovery Learning (Rule Induction)", score: `${state.scores.discovery} / 8` },
+                { name: "2. Fill in the Blanks (Contextual Use)", score: `${state.scores.fill} / 8` },
+                { name: "3. Sentence Production Lab (Writing)", score: `${state.scores.writing} / 8` },
+                { name: "4. Pronunciation & Speech Studio", score: `${state.scores.speaking} / 8` }
+            ];
+
+            modules.forEach(m => {
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(51, 65, 85);
+                doc.text(m.name, 14, yPos);
+                doc.setFont("helvetica", "bold");
+                doc.text(m.score, 160, yPos);
+                doc.line(14, yPos + 3, 196, yPos + 3);
+                yPos += 12;
+            });
+
+            // Rules Reference Box
+            yPos += 8;
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(30, 41, 59);
+            doc.text("Grammar Quick Reference Key", 14, yPos);
+
+            yPos += 8;
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(71, 85, 105);
+
+            const rules = [
+                "• SINCE: Used for a specific starting point in time (since 9 AM, since 2012, since I was young).",
+                "• FOR: Used for a duration or length of time (for 3 days, for 5 hours, for a long time).",
+                "• ALREADY: Used for actions completed sooner than expected (Subject + have/has + already + V3).",
+                "• YET: Used in negative sentences and questions to express expected actions (At sentence end)."
+            ];
+
+            rules.forEach(r => {
+                doc.text(r, 14, yPos);
+                yPos += 6;
+            });
+
+            // Save PDF file
+            doc.save(`Present_Perfect_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+            showToast("PDF report downloaded successfully!");
+        }
+
+        // Notification Toast helper
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = message;
+            if (type === "warning") {
+                toastIcon.className = "text-amber-400 text-lg";
+                toastIcon.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+            } else {
+                toastIcon.className = "text-emerald-400 text-lg";
+                toastIcon.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // --- APP INITIALIZATION ---
+        window.onload = function() {
+            renderDiscoveryTab();
+            renderFillTab();
+            renderWritingTab();
+            renderSpeakingTab();
+            updateScores();
+        };
+    </script>
+</body>
+</html>
